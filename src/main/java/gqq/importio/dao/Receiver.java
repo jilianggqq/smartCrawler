@@ -1,4 +1,4 @@
-package gqq.crawler.dao;
+package gqq.importio.dao;
 
 import java.util.concurrent.CountDownLatch;
 

@@ -1,4 +1,4 @@
-package gqq.crawler.api;
+package gqq.importio.api;
 
 public class Greeting {
 	private final long id;
