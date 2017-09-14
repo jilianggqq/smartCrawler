@@ -1,4 +1,4 @@
-package gqq.importio.dao;
+package gqq.importio.dao.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,34 +6,37 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gqq.importio.dao.RedisUrlRepository;
+import gqq.importio.dao.model.RedisUrl;
+
 /**
  * Created by jt on 1/10/17.
  */
 @Service
-public class ProductServiceImpl implements ProductService {
+public class RedisUrlServiceImpl implements RedisUrlService {
 
-    private ProductRepository productRepository;
+    private RedisUrlRepository productRepository;
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public RedisUrlServiceImpl(RedisUrlRepository productRepository) {
         this.productRepository = productRepository;
     }
 
 
     @Override
-    public List<Product> listAll() {
-        List<Product> products = new ArrayList<>();
+    public List<RedisUrl> listAll() {
+        List<RedisUrl> products = new ArrayList<>();
         productRepository.findAll().forEach(products::add); //fun with Java 8
         return products;
     }
 
     @Override
-    public Product getById(String id) {
+    public RedisUrl getById(String id) {
         return productRepository.findOne(id);
     }
 
     @Override
-    public Product saveOrUpdate(Product product) {
+    public RedisUrl saveOrUpdate(RedisUrl product) {
         productRepository.save(product);
         return product;
     }
@@ -43,4 +46,10 @@ public class ProductServiceImpl implements ProductService {
         productRepository.delete(id);
 
     }
+
+
+	@Override
+	public boolean exists(String id) {
+		return productRepository.exists(id);
+	}
 }
