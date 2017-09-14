@@ -21,7 +21,7 @@
  */
 package com.soulgalore.crawler.util;
 
-import org.apache.http.HttpStatus;
+import org.eclipse.jetty.http.HttpStatus;
 
 /**
  * Specific status codes.
@@ -65,7 +65,7 @@ public enum StatusCode {
 	 */
 	public static boolean isResponseCodeOk(Integer responseCode) {
 
-		if (responseCode >= HttpStatus.SC_BAD_REQUEST)
+		if (responseCode >= HttpStatus.BAD_REQUEST_400)
 			return false;
 		return true;
 	}

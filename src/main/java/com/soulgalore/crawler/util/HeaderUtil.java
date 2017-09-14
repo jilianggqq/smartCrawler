@@ -23,13 +23,8 @@ package com.soulgalore.crawler.util;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
-
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
 
 /**
  * Utils class.

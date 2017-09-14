@@ -21,14 +21,48 @@
  */
 package gqq.importio.crawler;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+
+import org.eclipse.jetty.client.HttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Interface for the response fetchers.
  * 
  */
-public interface HTMLPageResponseFetcher {
+public abstract class HTMLPageResponseFetcher {
+	protected final Logger logger;
+	// the http responses result.
+	protected Set<HTMLPageResponse> correctResponses;
+	protected Set<HTMLPageResponse> errorResponses;
+
+	protected final HttpClient httpClient;
+
+	private Set<CrawlerURL> urls;
+
+	protected final Map<String, String> requestHeaders;
+
+	protected CountDownLatch latch;
+
+	public HTMLPageResponseFetcher(Map<String, String> requestHeaders, HttpClient httpClient) {
+		logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+		this.correctResponses = new HashSet<>();
+		this.errorResponses = new HashSet<>();
+		this.httpClient = httpClient;
+		this.requestHeaders = requestHeaders;
+	}
+
+	public Set<HTMLPageResponse> getErrorResponses() {
+		return errorResponses;
+	}
+
+	public Set<HTMLPageResponse> getResponses() {
+		return this.correctResponses;
+	}
 
 	/**
 	 * 
@@ -37,16 +71,54 @@ public interface HTMLPageResponseFetcher {
 	 * @param requestHeaders
 	 *            http request headers.
 	 * @return
+	 * @throws Exception 
 	 */
-	void get(Set<CrawlerURL> urls, Map<String, String> requestHeaders);
+	public void processing() throws Exception {
+		if (!httpClient.isStarted()) {
+			throw new Exception("You should start httpClient first");
+		}
+		if (getUrls().isEmpty()) {
+			throw new Exception("there is no url needed to be processed");
+		}
+		correctResponses.clear();
+		errorResponses.clear();
+		latch = new CountDownLatch(getUrls().size());
+	}
+
+	public void shutdown() {
+		if (httpClient.isStarted()) {
+			try {
+				httpClient.stop();
+				logger.info("http client has stopped");
+			} catch (Exception e) {
+				logger.error("!!! http client shut down error !!!");
+				logger.error(e.getMessage());
+			}
+		}
+	}
+
+	public void startup() {
+		try {
+			httpClient.start();
+			logger.info("http client is starting...");
+		} catch (Exception e) {
+			logger.error("!!! http client start up error !!!");
+			logger.error(e.getMessage());
+		}
+
+	}
 
 	/**
-	 * shut down http client
+	 * @return the urls
 	 */
-	void shutdown();
+	public Set<CrawlerURL> getUrls() {
+		return urls;
+	}
 
 	/**
-	 * start up http client
+	 * @param urls the urls to set
 	 */
-	void startup();
+	public void setUrls(Set<CrawlerURL> urls) {
+		this.urls = urls;
+	}
 }
