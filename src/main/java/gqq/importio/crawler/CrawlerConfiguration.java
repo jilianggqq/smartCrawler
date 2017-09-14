@@ -3,7 +3,7 @@ package gqq.importio.crawler;
 import java.util.Collections;
 import java.util.Map;
 
-import com.soulgalore.crawler.util.HeaderUtil;
+import gqq.importio.crawler.util.HeaderUtil;
 
 /**
  * Configuration for a crawl.

@@ -11,11 +11,10 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.http.HttpFields;
 
-import com.soulgalore.crawler.util.StatusCode;
-
 import gqq.importio.crawler.CrawlerURL;
 import gqq.importio.crawler.HTMLPageResponse;
 import gqq.importio.crawler.HTMLPageResponseFetcher;
+import gqq.importio.crawler.util.StatusCode;
 
 public class JettyClientResponseFetcher extends HTMLPageResponseFetcher {
 
