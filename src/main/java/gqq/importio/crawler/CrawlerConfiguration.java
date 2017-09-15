@@ -14,7 +14,7 @@ public final class CrawlerConfiguration {
 	/**
 	 * The default crawl level if no is supplied.
 	 */
-	public static final int DEFAULT_CRAWL_LEVEL = 1;
+	public static final int DEFAULT_CRAWL_LEVEL = 2;
 
 	private int maxLevels = DEFAULT_CRAWL_LEVEL;
 

@@ -18,7 +18,7 @@ public class WhenCrawlerRun {
 		HTMLPageResponseFetcher fetcher = new JettyClientResponseFetcher(new HashMap<>(), httpClient);
 		Crawler crawler = new JettyCrawler(fetcher, new AhrefPageURLParser());
 
-		CrawlerConfiguration config = CrawlerConfiguration.builder().setStartUrl("http://www.mkyong.com").setMaxLevels(3).build();
+		CrawlerConfiguration config = CrawlerConfiguration.builder().setStartUrl("http://www.mkyong.com").setMaxLevels(2).build();
 		crawler.doProcess(config);
 	}
 	

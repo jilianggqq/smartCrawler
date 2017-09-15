@@ -15,6 +15,7 @@ import gqq.importio.crawler.CrawlerURL;
 import gqq.importio.crawler.HTMLPageResponse;
 import gqq.importio.crawler.HTMLPageResponseFetcher;
 import gqq.importio.crawler.util.StatusCode;
+import gqq.importio.util.DateUtils;
 
 public class JettyClientResponseFetcher extends HTMLPageResponseFetcher {
 
@@ -52,6 +53,7 @@ public class JettyClientResponseFetcher extends HTMLPageResponseFetcher {
 
 				@Override
 				public void onComplete(Result result) {
+//					result.i
 					try {
 						String encoding = getEncoding();
 						String body = getContentAsString(encoding);
@@ -59,7 +61,7 @@ public class JettyClientResponseFetcher extends HTMLPageResponseFetcher {
 							// System.out.println(body);
 							int size = body.length();
 							HTMLPageResponse hpresponse = new HTMLPageResponse(url, result.getResponse().getStatus(), headersAndValues, body,
-									encoding, size, getMediaType(), 0);
+									encoding, size, getMediaType(), DateUtils.toUnixTime(DateUtils.getDateTimeNow()));
 							correctResponses.add(hpresponse);
 						} else {
 							logger.info("body is null, url is " + url.toString());
@@ -71,12 +73,6 @@ public class JettyClientResponseFetcher extends HTMLPageResponseFetcher {
 					} finally {
 						latch.countDown();
 					}
-				}
-
-				@Override
-				public void onFailure(Response response, Throwable failure) {
-					super.onFailure(response, failure);
-					latch.countDown();
 				}
 
 			});

@@ -41,6 +41,7 @@ public class RedisUrlServiceTest {
 	public void testService() throws Exception {
 		// given
 		RedisUrl url = new RedisUrl();
+//		url.getHttpCode()
 		url.setHttpCode(HTTPCODE);
 		url.setTimestamp(TIME);
 		url.setUrl(URI);
