@@ -1,6 +1,11 @@
 package gqq.importio.api;
 
-public class UrlEntity {
+/**
+ * POJO of response.
+ * @author gqq
+ *
+ */
+public class ResponseUrlEntity {
 	private String url;
 	private int httpCode;
 	private String timestamp;
@@ -29,5 +34,4 @@ public class UrlEntity {
 		this.timestamp = timestamp;
 	}
 
-	
 }

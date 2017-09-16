@@ -48,8 +48,8 @@ public class RedisUrlServiceTest {
 
 		if (service.exists(URI)) {
 			logger.info("the url with id [{}] exists!", URI);
-			url.setHttpCode(HTTPCODE2);
-			service.saveOrUpdate(url);
+			RedisUrl testUrl = service.getByUrl(URI);
+			assertEquals(testUrl.getUrl(), URI);
 		} else {
 			logger.info("insert url with [{}]", URI);
 			// when
