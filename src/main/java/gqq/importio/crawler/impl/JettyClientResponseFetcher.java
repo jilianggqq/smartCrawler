@@ -55,6 +55,7 @@ public class JettyClientResponseFetcher extends HTMLPageResponseFetcher {
 				public void onComplete(Result result) {
 					try {
 						if (result.isFailed()) return;
+						
 						if (!getMediaType().equals("text/html"))
 							return;
 						String encoding = getEncoding();

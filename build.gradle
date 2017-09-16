@@ -36,7 +36,7 @@ targetCompatibility = 1.8
 dependencies {
 	compile("org.springframework.boot:spring-boot-starter-web")
 	compile("org.springframework.boot:spring-boot-devtools")
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile("org.springframework.boot:spring-boot-starter-test")
     compile("org.springframework.boot:spring-boot-starter")
     // compile("org.springframework.boot:spring-boot-starter-data-redis")
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-redis

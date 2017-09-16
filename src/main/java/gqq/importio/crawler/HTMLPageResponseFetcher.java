@@ -22,6 +22,7 @@
 package gqq.importio.crawler;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -50,8 +51,8 @@ public abstract class HTMLPageResponseFetcher {
 
 	public HTMLPageResponseFetcher(Map<String, String> requestHeaders, HttpClient httpClient) {
 		logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
-		this.correctResponses = new HashSet<>();
-		this.errorResponses = new HashSet<>();
+		this.correctResponses = new LinkedHashSet<>();
+		this.errorResponses = new LinkedHashSet<>();
 		this.httpClient = httpClient;
 		this.requestHeaders = requestHeaders;
 	}

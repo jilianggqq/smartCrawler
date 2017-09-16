@@ -1,5 +1,10 @@
 package gqq.importio.api;
 
+/**
+ * POJO of error entity
+ * @author gqq
+ *
+ */
 public class ErrorEntity {
 	private String msg;
 
@@ -12,8 +17,16 @@ public class ErrorEntity {
 		this(message, "");
 	}
 
+	public ErrorEntity() {
+		this("");
+	}
+
 	public String getMsg() {
 		return msg;
+	}
+	
+	public void setMsg(String msg) {
+		this.msg = msg;
 	}
 
 	public String getStackTrace() {

@@ -2,6 +2,8 @@ package gqq.importio.api;
 
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -19,6 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import gqq.importio.crawler.Crawler;
 import gqq.importio.crawler.CrawlerConfiguration;
+import gqq.importio.crawler.CrawlerURL;
 import gqq.importio.crawler.HTMLPageResponseFetcher;
 import gqq.importio.crawler.impl.AhrefPageURLParser;
 import gqq.importio.crawler.impl.JettyClientResponseFetcher;
@@ -37,7 +40,7 @@ public class CrawlerController {
 	 * start a crawler from posted url.
 	 * 
 	 * @param entity
-	 *            Request entity.
+	 *            Request entity. 1. url path. 2.the visit depth.
 	 * @param ucBuilder
 	 *            uribuilder.
 	 * @return created result.
@@ -45,6 +48,13 @@ public class CrawlerController {
 	@RequestMapping(value = "/url", method = RequestMethod.POST)
 	public ResponseEntity<?> crawler(@RequestBody RequestUrlEntity entity, UriComponentsBuilder ucBuilder) {
 		logger.info("entity : {}", entity.toString());
+
+		// check
+		ErrorEntity ee = new ErrorEntity();
+		if (!check(entity.getUrl(), ee)) {
+			return new ResponseEntity<ErrorEntity>(ee, HttpStatus.BAD_REQUEST);
+		}
+
 		CrawlerConfiguration config = CrawlerConfiguration.builder().setStartUrl(entity.getUrl()).setMaxLevels(entity.getDepth()).build();
 		try {
 			startCrawler(config);
@@ -59,37 +69,96 @@ public class CrawlerController {
 	}
 
 	/**
-	 * check whether a url has been visited.
+	 * check if request parameter is correct.
+	 * 
+	 * @param entity
+	 * @param eEntity
+	 * @return
+	 */
+	private boolean check(String url, ErrorEntity eEntity) {
+		if (url == null || url.isEmpty()) {
+			eEntity.setMsg("request url can not be null!");
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Take a URL and returns the HTTP status code and timestamp it was fetched, or that it wasn't visited
 	 * 
 	 * @param entity
 	 *            UrlEntity object.
 	 * @return 1. 200 UrlEntity 2. 204 UrlEntity
 	 */
-	@RequestMapping(value = "/urls/search", method = RequestMethod.POST)
-	public ResponseEntity<ResponseUrlEntity> getIfVisited(@RequestBody ResponseUrlEntity entity) {
+	@RequestMapping(value = "/urls/one", method = RequestMethod.POST)
+	public ResponseEntity<?> searchOne(@RequestBody ResponseUrlEntity entity) {
 		logger.info("entity's url : {} ", entity.getUrl());
-		RedisUrl rUrl = service.getByUrl(entity.getUrl());
-		if (rUrl == null) {
-			entity.setHttpCode(org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204);
-			entity.setUrl(org.eclipse.jetty.http.HttpStatus.Code.NO_CONTENT.getMessage());
-			return new ResponseEntity<ResponseUrlEntity>(entity, HttpStatus.NO_CONTENT);
+		ErrorEntity eEntity = new ErrorEntity();
+		if (!check(entity.getUrl(), eEntity)) {
+			return new ResponseEntity<ErrorEntity>(eEntity, HttpStatus.BAD_REQUEST);
 		}
-		entity.setHttpCode(rUrl.getHttpCode());
-		entity.setTimestamp(DateUtils.fromUnixTimeStr(rUrl.getTimestamp()));
+
+		fillEntity(entity);
 		return new ResponseEntity<ResponseUrlEntity>(entity, HttpStatus.OK);
+
+	}
+
+	/**
+	 * Take URLs and returns the HTTP status code and timestamp they were fetched, or they were not visited
+	 * 
+	 * @param entity
+	 *            UrlEntity object.
+	 * @return 1. 200 UrlEntity 2. 204 UrlEntity 3. 400 Bad Request
+	 */
+	@RequestMapping(value = "/urls/mult", method = RequestMethod.POST)
+	public ResponseEntity<?> searchMult(@RequestBody List<ResponseUrlEntity> entities) {
+
+		if (entities == null || entities.size() == 0) {
+			return new ResponseEntity<ErrorEntity>(new ErrorEntity("request body can not be null"), HttpStatus.BAD_REQUEST);
+		}
+
+		ErrorEntity eEntity = new ErrorEntity();
+		for (ResponseUrlEntity entity : entities) {
+			if (!check(entity.getUrl(), eEntity)) {
+				return new ResponseEntity<ErrorEntity>(eEntity, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+		entities.forEach(entity -> {
+			logger.info("entity's url : {} ", entity.getUrl());
+			fillEntity(entity);
+		});
+		return new ResponseEntity<List<ResponseUrlEntity>>(entities, HttpStatus.OK);
 	}
 
 	/**
 	 * start crawler.
 	 * 
 	 * @param config
+	 * @return all the processed urls.
 	 * @throws Exception
 	 * @throws URISyntaxException
 	 */
-	public void startCrawler(CrawlerConfiguration config) throws URISyntaxException, Exception {
+	public Set<CrawlerURL> startCrawler(CrawlerConfiguration config) throws URISyntaxException, Exception {
 		HttpClient httpClient = new HttpClient(new SslContextFactory());
 		HTMLPageResponseFetcher fetcher = new JettyClientResponseFetcher(new HashMap<>(), httpClient);
 		Crawler crawler = new JettyCrawler(fetcher, new AhrefPageURLParser(), service);
-		crawler.doProcess(config);
+		return crawler.doProcess(config);
+	}
+
+	/**
+	 * fill the response entity from retrieving redis.
+	 * 
+	 * @param entity
+	 */
+	public void fillEntity(ResponseUrlEntity entity) {
+		RedisUrl rUrl = service.getByUrl(entity.getUrl());
+		if (rUrl == null) {
+			entity.setHttpCode(org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204);
+			entity.setUrl(org.eclipse.jetty.http.HttpStatus.Code.NO_CONTENT.getMessage());
+			return;
+		}
+		entity.setHttpCode(rUrl.getHttpCode());
+		entity.setTimestamp(DateUtils.fromUnixTimeStr(rUrl.getTimestamp()));
 	}
 }

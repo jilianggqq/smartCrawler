@@ -1,9 +1,150 @@
-curl -i -X POST -H "Content-Type: application/json" -d '{"url":"http://www.mkyong.com"}' http://localhost:8080/url/search
-curl -i -X POST -H "Content-Type: application/json" -d '{"url":"crawlerurls:http://www.mkyong.com/java8/java-8-filter-a-null-value-from-a-stream/"}' http://localhost:8080/url/search
-curl -i -X POST -H "Content-Type: application/json" -d '{"url":"http://www.mkyong.com/contact-mkyog/"}' http://localhost:8080/v1/urls/search
+#Smart Crawler
 
-curl -i -X POST -w "@curl-format.txt" -H "Content-Type: application/json" -d '{"url":"http://www.mkyong.com/author/mkyong/"}' http://localhost:8080/v1/urls/search
+## Environment
++ **Redis server** : 3.0.6
++ **Gradle** : 4.1
++ **Spring Boot** : 1.5.6
 
-curl -i -X POST -w "@curl-format.txt" -H "Content-Type: application/json" -d '{"url":"http://www.mkyong.com/", "depth":2}' http://localhost:8080/v1/url
+## REST Apis
 
-http://www.mkyong.com/contact-mkyong/
++ **URL** : ___/v1/url___
++ **Title** : Providing a URL and depth n (if not provided, default is 2). Triggering a crawler at the server to do n depth + work.
++ **Method** : POST
++ **URL Params** :  NULL
++ **Data Params** : { **url** :  String ,  **[depth]** : Number}
++ **Response Codes**: CREATED (201), Bad Request (400), INTERNAL_SERVER_ERROR (500)
+
++ **URL** : ___/v1/urls/one___
++ **Title** : Take a URL and returns the HTTP status code and timestamp it was fetched, or that it wasn't visited
++ **Method** : POST
++ **URL Params** :  NULL
++ **Data Params** : { **url** :  String}
++ **Response Codes: OK (200), Bad Request (400).
++ **Response Contents** : {"url" : String, "httpCode" : int(200, 404, 500...), "timestamp" : String (yyyy-MM-dd : hh:mm:ss)}
+
+
+**URL** : ___/v1/urls/mult___
+**Title** : Take URLs and returns the HTTP status code and timestamp it was fetched, or that it wasn't visited
+**Method** : POST
+**URL Params** :  NULL
+**Data Params** : [{ **url** :  String}, { **url** :  String}, { **url** :  String} ...]
+**Response Codes: OK (200), Bad Request (400).
+**Response Contents** : [{"url" : String, "httpCode" : int(200, 404, 500...), "timestamp" : String (yyyy-MM-dd : hh:mm:ss)}, {"url" : String, "httpCode" : int(200, 404, 500...), "timestamp" : String (yyyy-MM-dd : hh:mm:ss)}, ...]
+
+## Running
+
++ Starting Spring boot.
+```shell
+    ./gradlew build bootRun
+```
+
++ Take a URL and queues it at max depth for processing.
+```curl
+    curl -i -X POST -w "@curl-format.txt" -H "Content-Type: application/json" -d '{"url":"http://www.mkyong.com/", "depth":2}' http://localhost:8080/v1/url
+```
+**The results is**
+```shell
+    HTTP/1.1 201 
+    Location: http://localhost:8080/v1/url
+    Content-Length: 0
+    Date: Sat, 16 Sep 2017 23:26:16 GMT
+    time_namelookup:  0.004
+           time_connect:  0.004
+        time_appconnect:  0.000
+       time_pretransfer:  0.004
+          time_redirect:  0.000
+     time_starttransfer:  6.210
+                        ----------
+             time_total:  6.210
+```
+
++ Take a URL and returns the HTTP status code and timestamp it was fetched, or that it wasn't visited
+
+1. visited url example.
+``` curl
+    curl -i -X POST -w "@curl-format.txt" -H "Content-Type: application/json" -d '{"url":"http://www.mkyong.com/oracle/oracle-plsql-bitand-function-example/"}' http://localhost:8080/v1/urls/one
+    
+```
+**The results is**
+```shell
+HTTP/1.1 200 
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Sat, 16 Sep 2017 23:35:48 GMT
+
+{
+  "url" : "http://www.mkyong.com/oracle/oracle-plsql-bitand-function-example/",
+  "httpCode" : 200,
+  "timestamp" : "2017-09-16 16:26:15"
+}
+
+time_namelookup:  0.004
+       time_connect:  0.004
+    time_appconnect:  0.000
+   time_pretransfer:  0.004
+      time_redirect:  0.000
+ time_starttransfer:  0.010
+                    ----------
+         time_total:  0.010
+
+```
+
+2. not visited url exampple.
+```cull
+curl -i -X POST -w "@curl-format.txt" -H "Content-Type: application/json" -d '{"url":"http://www.google.com"}' http://localhost:8080/v1/urls/one
+```
+
+**The results is**
+``` shell
+HTTP/1.1 200 
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Sat, 16 Sep 2017 23:42:50 GMT
+
+{
+  "url" : "No Content",
+  "httpCode" : 204,
+  "timestamp" : null
+}
+
+time_namelookup:  0.004
+       time_connect:  0.004
+    time_appconnect:  0.000
+   time_pretransfer:  0.004
+      time_redirect:  0.000
+ time_starttransfer:  0.018
+                    ----------
+         time_total:  0.020
+```
+
++ Take URLs and returns the HTTP status code and timestamp they were fetched, or they were not visited
+```cull
+curl -i -X POST -w "@curl-format.txt" -H "Content-Type: application/json" -d '[{"url":"http://www.google.com"}, {"url":"http://www.mkyong.com/oracle/oracle-plsql-bitand-function-example/"}, {"url":"http://www.mkyong.com/java/java-how-to-print-a-pyramid/"}]' http://localhost:8080/v1/urls/mult
+```
+
+**The results is**
+
+```shell
+[ {
+  "url" : "No Content",
+  "httpCode" : 204,
+  "timestamp" : null
+}, {
+  "url" : "http://www.mkyong.com/oracle/oracle-plsql-bitand-function-example/",
+  "httpCode" : 200,
+  "timestamp" : "2017-09-16 16:26:15"
+}, {
+  "url" : "http://www.mkyong.com/java/java-how-to-print-a-pyramid/",
+  "httpCode" : 200,
+  "timestamp" : "2017-09-16 16:26:15"
+} ]
+
+time_namelookup:  0.004
+       time_connect:  0.004
+    time_appconnect:  0.000
+   time_pretransfer:  0.004
+      time_redirect:  0.000
+ time_starttransfer:  0.011
+                    ----------
+         time_total:  0.011
+```

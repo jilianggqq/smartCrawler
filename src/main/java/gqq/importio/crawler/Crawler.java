@@ -13,23 +13,25 @@ import gqq.importio.dao.model.RedisUrl;
 public interface Crawler {
 
 	/**
-	 * Shutdown the crawler.
+	 * shut down jetty http client
 	 */
 	void shutdown();
+
+	
+	/**
+	 * start jetty http client.
+	 */
+	void startup();
 
 	/**
 	 * start crawler by the configuration and install the result into database.
 	 * 
 	 * @param configuration
+	 * @return 
 	 * @throws Exception 
 	 * @throws URISyntaxException 
 	 */
-	void doProcess(CrawlerConfiguration configuration) throws URISyntaxException, Exception;
-
-	/**
-	 * start the crawler.
-	 */
-	void startup();
+	Set<CrawlerURL> doProcess(CrawlerConfiguration configuration) throws URISyntaxException, Exception;
 
 	/**
 	 * save all the model into redis.
