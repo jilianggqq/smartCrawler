@@ -87,8 +87,7 @@ public class CrawlerController {
 	public void startCrawler(CrawlerConfiguration config) {
 		HttpClient httpClient = new HttpClient(new SslContextFactory());
 		HTMLPageResponseFetcher fetcher = new JettyClientResponseFetcher(new HashMap<>(), httpClient);
-		Crawler crawler = new JettyCrawler(fetcher, new AhrefPageURLParser());
-		crawler.setService(service);
+		Crawler crawler = new JettyCrawler(fetcher, new AhrefPageURLParser(), service);
 		crawler.doProcess(config);
 	}
 }

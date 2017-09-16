@@ -13,9 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import gqq.importio.crawler.impl.AhrefPageURLParser;
 import gqq.importio.crawler.impl.JettyClientResponseFetcher;
 import gqq.importio.crawler.impl.JettyCrawler;
-import gqq.importio.dao.RedisUrlRepository;
 import gqq.importio.dao.service.RedisUrlService;
-
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -23,25 +21,15 @@ public class WhenCrawlerRun {
 
 	@Autowired
 	private RedisUrlService service;
-	
+
 	@Test
 	public void testWithMkyong() throws Exception {
 		HttpClient httpClient = new HttpClient(new SslContextFactory());
 		HTMLPageResponseFetcher fetcher = new JettyClientResponseFetcher(new HashMap<>(), httpClient);
-		Crawler crawler = new JettyCrawler(fetcher, new AhrefPageURLParser());
-		crawler.setService(service);
-		
-		CrawlerConfiguration config = CrawlerConfiguration.builder().setStartUrl("http://www.mkyong.com").setMaxLevels(2).build();
+		Crawler crawler = new JettyCrawler(fetcher, new AhrefPageURLParser(), service);
+
+		CrawlerConfiguration config = CrawlerConfiguration.builder().setStartUrl("http://www.mkyong.com").setMaxLevels(4).build();
 		crawler.doProcess(config);
 	}
-	
-	@Test
-	public void testWithMkong2() throws Exception {
-//		HttpClient httpClient = new HttpClient(new SslContextFactory());
-//		HTMLPageResponseFetcher fetcher = new JettyClientResponseFetcher(new HashMap<>(), httpClient);
-//		Crawler crawler = new JettyCrawler(fetcher, new AhrefPageURLParser());
-//
-//		CrawlerConfiguration config = CrawlerConfiguration.builder().setStartUrl("http://www.mkyong.com/author/jacklok/").setMaxLevels(1).build();
-//		crawler.doProcess(config);
-	}
+
 }

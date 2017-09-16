@@ -4,15 +4,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import gqq.importio.crawler.Crawler;
 import gqq.importio.crawler.CrawlerConfiguration;
@@ -20,14 +19,16 @@ import gqq.importio.crawler.CrawlerURL;
 import gqq.importio.crawler.HTMLPageResponse;
 import gqq.importio.crawler.HTMLPageResponseFetcher;
 import gqq.importio.crawler.PageURLParser;
-import gqq.importio.dao.RedisUrlRepository;
 import gqq.importio.dao.model.RedisUrl;
 import gqq.importio.dao.service.RedisUrlService;
-import gqq.importio.dao.service.RedisUrlServiceImpl;
 
 /**
- * Crawl urls within the same domain.
+ * Crawler with jetty client.
  * 
+ * doing http request ancyle
+ * 
+ * @author gqq
+ *
  */
 public class JettyCrawler implements Crawler {
 	private static final Logger logger = LoggerFactory.getLogger(JettyCrawler.class);
@@ -36,36 +37,24 @@ public class JettyCrawler implements Crawler {
 
 	private RedisUrlService service;
 
-	@Override
-	public void setService(RedisUrlService service) {
-		this.service = service;
-	}
+	private final static int MAX_REQUEST_URLS = 30;
+	private final static int SLEEP_MINISECONDS = 2000;
 
-	// private RedisUrlRepository repository;
 	/**
-	 * Create a new crawler.
+	 * constructor of Jetty crawler
 	 * 
 	 * @param theResponseFetcher
-	 *            the response fetcher to use.
+	 *            response fetcher
 	 * @param theParser
-	 *            the parser.
+	 *            parser which is used to parse html contents using jsoup
+	 * @param service
+	 *            Redis service used to store data.
 	 */
-	public JettyCrawler(HTMLPageResponseFetcher theResponseFetcher, PageURLParser theParser) {
+	public JettyCrawler(HTMLPageResponseFetcher theResponseFetcher, PageURLParser theParser, RedisUrlService service) {
 		responseFetcher = theResponseFetcher;
 		parser = theParser;
-		// service = new RedisUrlServiceImpl(new RedisUrlRepository)
-		// service = new RedisUrlServiceImpl(repository);
+		this.service = service;
 	}
-	//
-	// public static void main(String[] args) throws URISyntaxException {
-	// JettyCrawler jc = new JettyCrawler(new AhrefPageURLParser());
-	//// jc.getNextLevelLinks(allUrls, currUrls, verifiedUrls, requestHeaders);
-	// CrawlerConfiguration config =
-	// CrawlerConfiguration.builder().setStartUrl("https://www.scientificamerican.com/podcast/60-second-science/").setMaxLevels(2).build();
-	//
-	//
-	// jc.getUrl(config);
-	// }
 
 	public static String getDomainName(String url) throws URISyntaxException {
 		URI uri = new URI(url);
@@ -109,26 +98,42 @@ public class JettyCrawler implements Crawler {
 
 			currUrls.forEach(url -> logger.info(url.toString()));
 			while (level < configuration.getMaxLevels()) {
-				logger.info("------------------------------------------------------");
-
 				// 1. run next level crawler, get the response.
 				logger.info("size of currUrls is {}", currUrls.size());
-				// set the urls to be processed.
-				responseFetcher.setUrls(currUrls);
-				responseFetcher.processing();
-				Set<HTMLPageResponse> currResponses = responseFetcher.getResponses();
-				logger.info("currResponses urls's size is {}", currResponses.size());
+
+				Iterator<CrawlerURL> iterator = currUrls.iterator();
+				Set<HTMLPageResponse> currResponses = new HashSet<>();
+				while (iterator.hasNext()) {
+					Set<CrawlerURL> requestUrls = new HashSet<>();
+					int cnt = 0;
+					while (iterator.hasNext() && cnt < MAX_REQUEST_URLS) {
+						CrawlerURL validUrl = iterator.next();
+						requestUrls.add(validUrl);
+						iterator.remove();
+						cnt++;
+					}
+					// set the urls to be processed.
+					logger.info("\n\n");
+					logger.info("*****************requested url at level {}, url.size = {} ************", level, requestUrls.size());
+					requestUrls.forEach(ru -> logger.info(ru.getUrl()));
+					logger.info("***************** ****************** ************************* ************\n\n");
+					responseFetcher.setUrls(requestUrls);
+					responseFetcher.processing();
+
+					currResponses.addAll(responseFetcher.getResponses());
+					if (iterator.hasNext()) {
+						// if cnt reaches to max request urls, we need to wait some seconds, and then request again.
+						Thread.sleep(SLEEP_MINISECONDS);
+					}
+					logger.info("currResponses urls's size is {}", currResponses.size());
+				}
 
 				// 2. save the next level results into Redis. (optimization is using async).
 				List<RedisUrl> modelUrls = getModelUrls(currResponses);
-				logger.info("type of service is {}", service.getClass().getSimpleName());
-				logger.info("model urls's size is {}", modelUrls.size());
 				modelUrls.forEach(m -> service.saveOrUpdate(m));
 
 				// 3. get NextLevelLinkes from response.
-
 				currUrls = getNextLevelLinks(currUrls, allUrls, host, currResponses);
-				// currUrls.forEach(url -> logger.info(url.toString()));
 				level++;
 			}
 

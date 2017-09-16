@@ -50,5 +50,4 @@ public interface Crawler {
 	 */
 	List<RedisUrl> getModelUrls(Set<HTMLPageResponse> currResponses);
 
-	void setService(RedisUrlService service);
 }
