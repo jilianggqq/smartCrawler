@@ -65,13 +65,8 @@ public abstract class HTMLPageResponseFetcher {
 	}
 
 	/**
-	 * 
-	 * @param urls
-	 *            the urls need to be crawled.
-	 * @param requestHeaders
-	 *            http request headers.
-	 * @return
-	 * @throws Exception 
+	 * fetcher processing.
+	 * @throws Exception
 	 */
 	public void processing() throws Exception {
 		if (!httpClient.isStarted()) {
@@ -100,7 +95,7 @@ public abstract class HTMLPageResponseFetcher {
 	public void startup() {
 		try {
 			httpClient.start();
-			logger.info("http client is starting...");
+			logger.info("http client is started, processing...");
 		} catch (Exception e) {
 			logger.error("!!! http client start up error !!!");
 			logger.error(e.getMessage());

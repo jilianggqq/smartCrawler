@@ -1,17 +1,10 @@
-/******************************************************
- * Web crawler
- * 
- * 
- * 
- ******************************************************* 
- */
 package gqq.importio.crawler;
 
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Set;
 
 import gqq.importio.dao.model.RedisUrl;
-import gqq.importio.dao.service.RedisUrlService;
 
 /**
  * Interface of a web crawler.
@@ -28,8 +21,10 @@ public interface Crawler {
 	 * start crawler by the configuration and install the result into database.
 	 * 
 	 * @param configuration
+	 * @throws Exception 
+	 * @throws URISyntaxException 
 	 */
-	void doProcess(CrawlerConfiguration configuration);
+	void doProcess(CrawlerConfiguration configuration) throws URISyntaxException, Exception;
 
 	/**
 	 * start the crawler.

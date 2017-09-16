@@ -33,6 +33,7 @@ public class JettyClientResponseFetcher extends HTMLPageResponseFetcher {
 					Collections.<String, String>emptyMap(), "", "", 0, "", 0);
 			errorResponses.add(htmlPageResponse);
 			latch.countDown();
+			return;
 		}
 		final Map<String, String> headersAndValues = new HashMap<>();
 
@@ -52,8 +53,10 @@ public class JettyClientResponseFetcher extends HTMLPageResponseFetcher {
 
 				@Override
 				public void onComplete(Result result) {
-//					result.i
 					try {
+						if (result.isFailed()) return;
+						if (!getMediaType().equals("text/html"))
+							return;
 						String encoding = getEncoding();
 						String body = getContentAsString(encoding);
 						if (body != null) {
@@ -77,8 +80,8 @@ public class JettyClientResponseFetcher extends HTMLPageResponseFetcher {
 			});
 
 		} catch (Exception e) {
-			System.err.println(e);
 			e.printStackTrace();
+			logger.error(e.getMessage());
 			HTMLPageResponse htmlPageResponse = new HTMLPageResponse(url, StatusCode.SC_SERVER_RESPONSE_UNKNOWN.getCode(),
 					Collections.<String, String>emptyMap(), "", "", 0, "", -1);
 			errorResponses.add(htmlPageResponse);

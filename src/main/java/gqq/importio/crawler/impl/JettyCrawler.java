@@ -84,7 +84,7 @@ public class JettyCrawler implements Crawler {
 	 * @param configuration
 	 * @throws URISyntaxException
 	 */
-	public void doProcess(CrawlerConfiguration configuration) {
+	public void doProcess(CrawlerConfiguration configuration) throws URISyntaxException, Exception {
 		startup();
 		try {
 			String host = getDomainName(configuration.getStartUrl());
@@ -96,10 +96,10 @@ public class JettyCrawler implements Crawler {
 			currUrls.add(startURI);
 			allUrls.add(startURI);
 
-			currUrls.forEach(url -> logger.info(url.toString()));
+			currUrls.forEach(url -> logger.debug(url.toString()));
 			while (level < configuration.getMaxLevels()) {
 				// 1. run next level crawler, get the response.
-				logger.info("size of currUrls is {}", currUrls.size());
+				logger.debug("size of currUrls is {}", currUrls.size());
 
 				Iterator<CrawlerURL> iterator = currUrls.iterator();
 				Set<HTMLPageResponse> currResponses = new HashSet<>();
@@ -113,10 +113,10 @@ public class JettyCrawler implements Crawler {
 						cnt++;
 					}
 					// set the urls to be processed.
-					logger.info("\n\n");
-					logger.info("*****************requested url at level {}, url.size = {} ************", level, requestUrls.size());
-					requestUrls.forEach(ru -> logger.info(ru.getUrl()));
-					logger.info("***************** ****************** ************************* ************\n\n");
+					logger.debug("\n\n");
+					logger.debug("*****************requested url at level {}, url.size = {} ************", level, requestUrls.size());
+					requestUrls.forEach(ru -> logger.debug(ru.getUrl()));
+					logger.debug("***************** ****************** ************************* ************\n\n");
 					responseFetcher.setUrls(requestUrls);
 					responseFetcher.processing();
 
@@ -125,7 +125,7 @@ public class JettyCrawler implements Crawler {
 						// if cnt reaches to max request urls, we need to wait some seconds, and then request again.
 						Thread.sleep(SLEEP_MINISECONDS);
 					}
-					logger.info("currResponses urls's size is {}", currResponses.size());
+					logger.debug("currResponses urls's size is {}", currResponses.size());
 				}
 
 				// 2. save the next level results into Redis. (optimization is using async).
@@ -136,12 +136,7 @@ public class JettyCrawler implements Crawler {
 				currUrls = getNextLevelLinks(currUrls, allUrls, host, currResponses);
 				level++;
 			}
-
-		} catch (URISyntaxException e) {
-			logger.error(e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
+ 
 		} finally {
 			shutdown();
 		}

@@ -1,5 +1,6 @@
 package gqq.importio.api;
 
+import java.net.URISyntaxException;
 import java.util.HashMap;
 
 import org.eclipse.jetty.client.HttpClient;
@@ -32,14 +33,6 @@ public class CrawlerController {
 	@Autowired
 	RedisUrlService service;
 
-	@RequestMapping("/test")
-	public String doTest() {
-		logger.info("just do test");
-		CrawlerConfiguration config = CrawlerConfiguration.builder().setStartUrl("http://www.mkyong.com").setMaxLevels(2).build();
-		startCrawler(config);
-		return "finished";
-	}
-
 	/**
 	 * start a crawler from posted url.
 	 * 
@@ -53,10 +46,16 @@ public class CrawlerController {
 	public ResponseEntity<?> crawler(@RequestBody RequestUrlEntity entity, UriComponentsBuilder ucBuilder) {
 		logger.info("entity : {}", entity.toString());
 		CrawlerConfiguration config = CrawlerConfiguration.builder().setStartUrl(entity.getUrl()).setMaxLevels(entity.getDepth()).build();
-		startCrawler(config);
-		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(ucBuilder.path("/url").build().toUri());
-		return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+		try {
+			startCrawler(config);
+			HttpHeaders headers = new HttpHeaders();
+			headers.setLocation(ucBuilder.path("/url").build().toUri());
+			return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+		} catch (URISyntaxException e) {
+			return new ResponseEntity(new ErrorEntity(e.getMessage(), e.getReason()), HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (Exception e) {
+			return new ResponseEntity(new ErrorEntity(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
@@ -82,9 +81,12 @@ public class CrawlerController {
 
 	/**
 	 * start crawler.
+	 * 
 	 * @param config
+	 * @throws Exception
+	 * @throws URISyntaxException
 	 */
-	public void startCrawler(CrawlerConfiguration config) {
+	public void startCrawler(CrawlerConfiguration config) throws URISyntaxException, Exception {
 		HttpClient httpClient = new HttpClient(new SslContextFactory());
 		HTMLPageResponseFetcher fetcher = new JettyClientResponseFetcher(new HashMap<>(), httpClient);
 		Crawler crawler = new JettyCrawler(fetcher, new AhrefPageURLParser(), service);
