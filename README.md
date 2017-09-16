@@ -1,9 +1,13 @@
-#Smart Crawler
+Smart Crawler
+=============
+
+This is a small app that will be instructed to crawl to a pre-configured depth from a URL by REST, and
+to allow us to make a REST API call to see if a URL has been visited by the crawler, and the response code & timestamp from this visit (if any).
 
 ## Environment
-+ **Redis server** : 3.0.6
-+ **Gradle** : 4.1
-+ **Spring Boot** : 1.5.6
+  **Redis server** : 3.0.6
+  **Gradle** : 4.1
+  **Spring Boot** : 1.5.6
 
 ## REST Apis
 
