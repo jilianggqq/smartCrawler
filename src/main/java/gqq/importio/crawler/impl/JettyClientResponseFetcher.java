@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.http.HttpFields;
@@ -14,8 +13,8 @@ import org.eclipse.jetty.http.HttpFields;
 import gqq.importio.crawler.CrawlerURL;
 import gqq.importio.crawler.HTMLPageResponse;
 import gqq.importio.crawler.HTMLPageResponseFetcher;
-import gqq.importio.crawler.util.StatusCode;
 import gqq.importio.util.DateUtils;
+import gqq.importio.util.StatusCode;
 
 public class JettyClientResponseFetcher extends HTMLPageResponseFetcher {
 
