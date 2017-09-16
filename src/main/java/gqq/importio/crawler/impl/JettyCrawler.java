@@ -35,9 +35,13 @@ public class JettyCrawler implements Crawler {
 	private final PageURLParser parser;
 
 	private RedisUrlService service;
-	
-	@Autowired
-	private RedisUrlRepository repository;
+
+	@Override
+	public void setService(RedisUrlService service) {
+		this.service = service;
+	}
+
+	// private RedisUrlRepository repository;
 	/**
 	 * Create a new crawler.
 	 * 
@@ -49,8 +53,8 @@ public class JettyCrawler implements Crawler {
 	public JettyCrawler(HTMLPageResponseFetcher theResponseFetcher, PageURLParser theParser) {
 		responseFetcher = theResponseFetcher;
 		parser = theParser;
-//		service = new RedisUrlServiceImpl(new RedisUrlRepository)
-		service = new RedisUrlServiceImpl(repository);
+		// service = new RedisUrlServiceImpl(new RedisUrlRepository)
+		// service = new RedisUrlServiceImpl(repository);
 	}
 	//
 	// public static void main(String[] args) throws URISyntaxException {
@@ -114,7 +118,6 @@ public class JettyCrawler implements Crawler {
 				responseFetcher.processing();
 				Set<HTMLPageResponse> currResponses = responseFetcher.getResponses();
 				logger.info("currResponses urls's size is {}", currResponses.size());
-				
 
 				// 2. save the next level results into Redis. (optimization is using async).
 				List<RedisUrl> modelUrls = getModelUrls(currResponses);
@@ -125,7 +128,7 @@ public class JettyCrawler implements Crawler {
 				// 3. get NextLevelLinkes from response.
 
 				currUrls = getNextLevelLinks(currUrls, allUrls, host, currResponses);
-//				currUrls.forEach(url -> logger.info(url.toString()));
+				// currUrls.forEach(url -> logger.info(url.toString()));
 				level++;
 			}
 

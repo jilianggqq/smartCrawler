@@ -61,4 +61,4 @@ dependencies {
 }
 
 
-mainClassName = 'gqq.crawler.dao.Application'
+mainClassName = 'gqq.importio.SpringBootRedisApplication'

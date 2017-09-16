@@ -11,7 +11,7 @@ public interface RedisUrlService {
 
     List<RedisUrl> listAll();
 
-    RedisUrl getById(String id);
+    RedisUrl getByUrl(String id);
 
     RedisUrl saveOrUpdate(RedisUrl url);
 

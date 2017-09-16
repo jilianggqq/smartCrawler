@@ -56,7 +56,7 @@ public class RedisUrlServiceTest {
 			service.saveOrUpdate(url);
 
 			// then
-			RedisUrl result = service.getById(url.getUrl());
+			RedisUrl result = service.getByUrl(url.getUrl());
 			assertEquals(HTTPCODE, result.getHttpCode());
 			assertEquals(URI, result.getUrl());
 			assertEquals(TIME, url.getTimestamp());

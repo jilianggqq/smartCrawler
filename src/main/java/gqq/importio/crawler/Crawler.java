@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import gqq.importio.dao.model.RedisUrl;
+import gqq.importio.dao.service.RedisUrlService;
 
 /**
  * Interface of a web crawler.
@@ -48,4 +49,6 @@ public interface Crawler {
 	 * @return redis urls list
 	 */
 	List<RedisUrl> getModelUrls(Set<HTMLPageResponse> currResponses);
+
+	void setService(RedisUrlService service);
 }
