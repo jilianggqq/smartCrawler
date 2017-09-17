@@ -11,29 +11,12 @@ to allow us to make a REST API call to see if a URL has been visited by the craw
 
 ## REST Apis
 
-+ **URL** : ___/v1/url___
-+ **Title** : Providing a URL and depth n (if not provided, default is 2). Triggering a crawler at the server to do n depth + work.
-+ **Method** : POST
-+ **URL Params** :  NULL
-+ **Data Params** : { **url** :  String ,  **[depth]** : Number}
-+ **Response Codes**: CREATED (201), Bad Request (400), INTERNAL_SERVER_ERROR (500)
-
-+ **URL** : ___/v1/urls/one___
-+ **Title** : Take a URL and returns the HTTP status code and timestamp it was fetched, or that it wasn't visited
-+ **Method** : POST
-+ **URL Params** :  NULL
-+ **Data Params** : { **url** :  String}
-+ **Response Codes: OK (200), Bad Request (400).
-+ **Response Contents** : {"url" : String, "httpCode" : int(200, 404, 500...), "timestamp" : String (yyyy-MM-dd : hh:mm:ss)}
-
-
-**URL** : ___/v1/urls/mult___
-**Title** : Take URLs and returns the HTTP status code and timestamp it was fetched, or that it wasn't visited
-**Method** : POST
-**URL Params** :  NULL
-**Data Params** : [{ **url** :  String}, { **url** :  String}, { **url** :  String} ...]
-**Response Codes: OK (200), Bad Request (400).
-**Response Contents** : [{"url" : String, "httpCode" : int(200, 404, 500...), "timestamp" : String (yyyy-MM-dd : hh:mm:ss)}, {"url" : String, "httpCode" : int(200, 404, 500...), "timestamp" : String (yyyy-MM-dd : hh:mm:ss)}, ...]
+URL | ___/v1/url___
+Title | Providing a URL and depth n (if not provided, default is 2). Triggering a crawler at the server to do n depth + work.
+Method | POST
+URL Params |  NULL
+Data Params | { url :String ,  [depth] :Number}
+Response Codes | CREATED (201), Bad Request (400), INTERNAL_SERVER_ERROR (500)
 
 ## Running
 
