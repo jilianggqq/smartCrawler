@@ -170,18 +170,3 @@ to allow us to make a REST API call to see if a URL has been visited by the craw
              time_total:  0.011
     ```
 
-
-
-
-time_namelookup:  0.004
-       time_connect:  0.004
-    time_appconnect:  0.000
-   time_pretransfer:  0.004
-      time_redirect:  0.000
- time_starttransfer:  1142.476
-                    ----------
-         time_total:  1142.477
-
-
-currResponses urls's size is 3228
-2017-09-16 18:04:01.520  INFO 5569 --- [nio-8080-exec-6] JettyClientResponseFetcher               : http client has stopped
