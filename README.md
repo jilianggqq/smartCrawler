@@ -5,9 +5,9 @@ This is a small app that will be instructed to crawl to a pre-configured depth f
 to allow us to make a REST API call to see if a URL has been visited by the crawler, and the response code & timestamp from this visit (if any).
 
 ## Environment
-  **Redis server** : 3.0.6
-  **Gradle** : 4.1
-  **Spring Boot** : 1.5.6
+  - Redis server : 3.0.6
+  - Gradle : 4.1
+  - Spring Boot : 1.5.6
 
 ## REST Apis
 
@@ -37,17 +37,20 @@ to allow us to make a REST API call to see if a URL has been visited by the craw
 
 ## Running
 
-+ Starting Spring boot.
-```shell
+1. __Starting Spring boot__.
+    ```shell
     ./gradlew build bootRun
-```
+    ```
 
-+ Take a URL and queues it at max depth for processing.
-```curl
-    curl -i -X POST -w "@curl-format.txt" -H "Content-Type: application/json" -d '{"url":"http://www.mkyong.com/", "depth":2}' http://localhost:8080/v1/url
-```
-**The results is**
-```shell
+2. __Take a URL and queues it at max depth for processing.__
+    ```curl
+    curl -i -X POST -w "@curl-format.txt" \
+    -H "Content-Type: application/json" \
+    -d '{"url":"http://www.mkyong.com/", "depth":2}' \
+    http://localhost:8080/v1/url
+    ```
+    The results is
+    ```shell
     HTTP/1.1 201 
     Location: http://localhost:8080/v1/url
     Content-Length: 0
@@ -60,95 +63,103 @@ to allow us to make a REST API call to see if a URL has been visited by the craw
      time_starttransfer:  6.210
                         ----------
              time_total:  6.210
-```
+    ```
 
-+ Take a URL and returns the HTTP status code and timestamp it was fetched, or that it wasn't visited
+3. __Take a URL and returns the HTTP status code and timestamp it was fetched, or that it wasn't visited__
 
-1. visited url example.
-``` curl
-    curl -i -X POST -w "@curl-format.txt" -H "Content-Type: application/json" -d '{"url":"http://www.mkyong.com/oracle/oracle-plsql-bitand-function-example/"}' http://localhost:8080/v1/urls/one
-    
-```
-**The results is**
-```shell
-HTTP/1.1 200 
-Content-Type: application/json;charset=UTF-8
-Transfer-Encoding: chunked
-Date: Sat, 16 Sep 2017 23:35:48 GMT
+  - ___visited url example.___
+    ``` curl
+    curl -i -X POST -w "@curl-format.txt" \
+    -H "Content-Type: application/json" \
+    -d '{"url":"http://www.mkyong.com/oracle/oracle-plsql-bitand-function-example/"}' \
+    http://localhost:8080/v1/urls/one
+    ```
+    The results is
+    ```shell
+    HTTP/1.1 200 
+    Content-Type: application/json;charset=UTF-8
+    Transfer-Encoding: chunked
+    Date: Sat, 16 Sep 2017 23:35:48 GMT
 
-{
-  "url" : "http://www.mkyong.com/oracle/oracle-plsql-bitand-function-example/",
-  "httpCode" : 200,
-  "timestamp" : "2017-09-16 16:26:15"
-}
+    {
+      "url" : "http://www.mkyong.com/oracle/oracle-plsql-bitand-function-example/",
+      "httpCode" : 200,
+      "timestamp" : "2017-09-16 16:26:15"
+    }
 
-time_namelookup:  0.004
-       time_connect:  0.004
-    time_appconnect:  0.000
-   time_pretransfer:  0.004
-      time_redirect:  0.000
- time_starttransfer:  0.010
-                    ----------
-         time_total:  0.010
+    time_namelookup:  0.004
+           time_connect:  0.004
+        time_appconnect:  0.000
+       time_pretransfer:  0.004
+          time_redirect:  0.000
+     time_starttransfer:  0.010
+                        ----------
+             time_total:  0.010
 
-```
+    ```
 
-2. not visited url exampple.
-```cull
-curl -i -X POST -w "@curl-format.txt" -H "Content-Type: application/json" -d '{"url":"http://www.google.com"}' http://localhost:8080/v1/urls/one
-```
+  - ___not visited url exampple.___
+    ```cull
+    curl -i -X POST -w "@curl-format.txt" \
+    -H "Content-Type: application/json" \
+    -d '{"url":"http://www.google.com"}' \
+    http://localhost:8080/v1/urls/one
+    ```
 
-**The results is**
-``` shell
-HTTP/1.1 200 
-Content-Type: application/json;charset=UTF-8
-Transfer-Encoding: chunked
-Date: Sat, 16 Sep 2017 23:42:50 GMT
+    The results is
+    ``` shell
+    HTTP/1.1 200 
+    Content-Type: application/json;charset=UTF-8
+    Transfer-Encoding: chunked
+    Date: Sat, 16 Sep 2017 23:42:50 GMT
 
-{
-  "url" : "No Content",
-  "httpCode" : 204,
-  "timestamp" : null
-}
+    {
+      "url" : "No Content",
+      "httpCode" : 204,
+      "timestamp" : null
+    }
 
-time_namelookup:  0.004
-       time_connect:  0.004
-    time_appconnect:  0.000
-   time_pretransfer:  0.004
-      time_redirect:  0.000
- time_starttransfer:  0.018
-                    ----------
-         time_total:  0.020
-```
+    time_namelookup:  0.004
+           time_connect:  0.004
+        time_appconnect:  0.000
+       time_pretransfer:  0.004
+          time_redirect:  0.000
+     time_starttransfer:  0.018
+                        ----------
+             time_total:  0.020
+    ```
 
-+ Take URLs and returns the HTTP status code and timestamp they were fetched, or they were not visited
-```cull
-curl -i -X POST -w "@curl-format.txt" -H "Content-Type: application/json" -d '[{"url":"http://www.google.com"}, {"url":"http://www.mkyong.com/oracle/oracle-plsql-bitand-function-example/"}, {"url":"http://www.mkyong.com/java/java-how-to-print-a-pyramid/"}]' http://localhost:8080/v1/urls/mult
-```
+4. __Take URLs and returns the HTTP status code and timestamp they were fetched, or they were not visited__
+    ```cull
+    curl -i -X POST -w "@curl-format.txt" \
+    -H "Content-Type: application/json" \
+    -d '[{"url":"http://www.google.com"}, {"url":"http://www.mkyong.com/oracle/oracle-plsql-bitand-function-example/"}, {"url":"http://www.mkyong.com/java/java-how-to-print-a-pyramid/"}]' \
+    http://localhost:8080/v1/urls/mult
+    ```
 
-**The results is**
+    The results is
 
-```shell
-[ {
-  "url" : "No Content",
-  "httpCode" : 204,
-  "timestamp" : null
-}, {
-  "url" : "http://www.mkyong.com/oracle/oracle-plsql-bitand-function-example/",
-  "httpCode" : 200,
-  "timestamp" : "2017-09-16 16:26:15"
-}, {
-  "url" : "http://www.mkyong.com/java/java-how-to-print-a-pyramid/",
-  "httpCode" : 200,
-  "timestamp" : "2017-09-16 16:26:15"
-} ]
+    ```shell
+    [ {
+      "url" : "No Content",
+      "httpCode" : 204,
+      "timestamp" : null
+    }, {
+      "url" : "http://www.mkyong.com/oracle/oracle-plsql-bitand-function-example/",
+      "httpCode" : 200,
+      "timestamp" : "2017-09-16 16:26:15"
+    }, {
+      "url" : "http://www.mkyong.com/java/java-how-to-print-a-pyramid/",
+      "httpCode" : 200,
+      "timestamp" : "2017-09-16 16:26:15"
+    } ]
 
-time_namelookup:  0.004
-       time_connect:  0.004
-    time_appconnect:  0.000
-   time_pretransfer:  0.004
-      time_redirect:  0.000
- time_starttransfer:  0.011
-                    ----------
-         time_total:  0.011
-```
+    time_namelookup:  0.004
+           time_connect:  0.004
+        time_appconnect:  0.000
+       time_pretransfer:  0.004
+          time_redirect:  0.000
+     time_starttransfer:  0.011
+                        ----------
+             time_total:  0.011
+    ```
