@@ -52,7 +52,7 @@ to allow us to make a REST API call to see if a URL has been visited by the craw
     ```curl
     curl -i -X POST -w "@curl-format.txt" \
     -H "Content-Type: application/json" \
-    -d '{"url":"http://www.mkyong.com/", "depth":2}' \
+    -d '{"url":"https://www.import.io/", "depth":3}' \
     http://localhost:8080/v1/url
     ```
     The results is
@@ -60,15 +60,16 @@ to allow us to make a REST API call to see if a URL has been visited by the craw
     HTTP/1.1 201 
     Location: http://localhost:8080/v1/url
     Content-Length: 0
-    Date: Sat, 16 Sep 2017 23:26:16 GMT
+    Date: Sun, 17 Sep 2017 08:27:19 GMT
+
     time_namelookup:  0.004
            time_connect:  0.004
         time_appconnect:  0.000
        time_pretransfer:  0.004
           time_redirect:  0.000
-     time_starttransfer:  6.210
+     time_starttransfer:  7.900
                         ----------
-             time_total:  6.210
+             time_total:  7.900
     ```
 
 3. __Take a URL and returns the HTTP status code and timestamp it was fetched, or that it wasn't visited__
@@ -77,7 +78,7 @@ to allow us to make a REST API call to see if a URL has been visited by the craw
     ``` curl
     curl -i -X POST -w "@curl-format.txt" \
     -H "Content-Type: application/json" \
-    -d '{"url":"http://www.mkyong.com/oracle/oracle-plsql-bitand-function-example/"}' \
+    -d '{"url":"https://www.import.io/solutions/manufacturing/"}' \
     http://localhost:8080/v1/urls/one
     ```
     The results is
@@ -85,12 +86,12 @@ to allow us to make a REST API call to see if a URL has been visited by the craw
     HTTP/1.1 200 
     Content-Type: application/json;charset=UTF-8
     Transfer-Encoding: chunked
-    Date: Sat, 16 Sep 2017 23:35:48 GMT
+    Date: Sun, 17 Sep 2017 07:35:55 GMT
 
     {
-      "url" : "http://www.mkyong.com/oracle/oracle-plsql-bitand-function-example/",
+      "url" : "https://www.import.io/solutions/manufacturing/",
       "httpCode" : 200,
-      "timestamp" : "2017-09-16 16:26:15"
+      "timestamp" : "2017-09-17 00:30:31"
     }
 
     time_namelookup:  0.004
@@ -98,10 +99,9 @@ to allow us to make a REST API call to see if a URL has been visited by the craw
         time_appconnect:  0.000
        time_pretransfer:  0.004
           time_redirect:  0.000
-     time_starttransfer:  0.010
+     time_starttransfer:  0.042
                         ----------
-             time_total:  0.010
-
+             time_total:  0.042
     ```
 
   - ___not visited url exampple.___
@@ -139,25 +139,30 @@ to allow us to make a REST API call to see if a URL has been visited by the craw
     ```cull
     curl -i -X POST -w "@curl-format.txt" \
     -H "Content-Type: application/json" \
-    -d '[{"url":"http://www.google.com"}, {"url":"http://www.mkyong.com/oracle/oracle-plsql-bitand-function-example/"}, {"url":"http://www.mkyong.com/java/java-how-to-print-a-pyramid/"}]' \
+    -d '[{"url":"http://www.google.com"}, {"url":"https://www.import.io/post/author/garyread/"}, {"url":"https://www.import.io/post/meidata-data-extraction/"}]' \
     http://localhost:8080/v1/urls/mult
     ```
 
     The results is
 
     ```shell
+    HTTP/1.1 200 
+    Content-Type: application/json;charset=UTF-8
+    Transfer-Encoding: chunked
+    Date: Sun, 17 Sep 2017 07:37:52 GMT
+
     [ {
       "url" : "No Content",
       "httpCode" : 204,
       "timestamp" : null
     }, {
-      "url" : "http://www.mkyong.com/oracle/oracle-plsql-bitand-function-example/",
+      "url" : "https://www.import.io/post/author/garyread/",
       "httpCode" : 200,
-      "timestamp" : "2017-09-16 16:26:15"
+      "timestamp" : "2017-09-17 00:30:20"
     }, {
-      "url" : "http://www.mkyong.com/java/java-how-to-print-a-pyramid/",
+      "url" : "https://www.import.io/post/meidata-data-extraction/",
       "httpCode" : 200,
-      "timestamp" : "2017-09-16 16:26:15"
+      "timestamp" : "2017-09-17 00:30:31"
     } ]
 
     time_namelookup:  0.004
@@ -165,8 +170,8 @@ to allow us to make a REST API call to see if a URL has been visited by the craw
         time_appconnect:  0.000
        time_pretransfer:  0.004
           time_redirect:  0.000
-     time_starttransfer:  0.011
+     time_starttransfer:  0.016
                         ----------
-             time_total:  0.011
+             time_total:  0.016
     ```
 

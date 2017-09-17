@@ -37,8 +37,8 @@ public class JettyCrawler implements Crawler {
 
 	private RedisUrlService service;
 
-	private final static int MAX_REQUEST_URLS = 30;
-	private final static int SLEEP_MINISECONDS = 2000;
+	private final static int MAX_REQUEST_URLS = 50;
+	private final static int SLEEP_MINISECONDS = 100;
 
 	/**
 	 * constructor of Jetty crawler
@@ -115,9 +115,10 @@ public class JettyCrawler implements Crawler {
 					}
 					// set the urls to be processed.
 					logger.info("\n\n");
-					logger.info("*****************requested url at level {}, url.size = {} ************", level, requestUrls.size());
+					logger.info("**********level : {}, requestUrls num : {}, currUrls num : {}************", level, requestUrls.size(),
+							currUrls.size());
 					requestUrls.forEach(ru -> logger.debug(ru.getUrl()));
-					logger.info("***************** ****************** ************************* ************\n\n");
+					logger.info("***************** ****************** ************************* ************");
 					responseFetcher.setUrls(requestUrls);
 					responseFetcher.processing();
 
