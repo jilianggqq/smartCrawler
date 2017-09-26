@@ -1,4 +1,4 @@
-package gqq.importio.scheduletasks;
+package gqq.importio.service.scheduletasks;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

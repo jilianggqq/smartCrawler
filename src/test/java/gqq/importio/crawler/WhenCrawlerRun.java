@@ -25,15 +25,15 @@ public class WhenCrawlerRun {
 	@Test
 	public void testWithMkyong() throws Exception {
 		
-		HttpClient httpClient = new HttpClient(new SslContextFactory());
-		HTMLPageResponseFetcher fetcher = new JettyClientResponseFetcher(new HashMap<>(), httpClient);
-		Crawler crawler = new JettyCrawler(fetcher, new AhrefPageURLParser(), service);
-
-		String start = "http://www.mkyong.com";
-		// String start = "https://sfbay.craigslist.org/";
-		// level default is 2
-		CrawlerConfiguration config = CrawlerConfiguration.builder().setStartUrl(start).build();
-		crawler.doProcess(config);
+		// HttpClient httpClient = new HttpClient(new SslContextFactory());
+		// HTMLPageResponseFetcher fetcher = new JettyClientResponseFetcher(new HashMap<>(), httpClient);
+		// Crawler crawler = new JettyCrawler(fetcher, new AhrefPageURLParser(), service);
+		//
+		// String start = "http://www.mkyong.com";
+		// // String start = "https://sfbay.craigslist.org/";
+		// // level default is 2
+		// CrawlerConfiguration config = CrawlerConfiguration.builder().setStartUrl(start).build();
+		// crawler.doProcess(config);
 	}
 
 }

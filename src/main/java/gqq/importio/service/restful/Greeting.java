@@ -1,4 +1,4 @@
-package gqq.importio.restful;
+package gqq.importio.service.restful;
 
 public class Greeting {
 	private final long id;

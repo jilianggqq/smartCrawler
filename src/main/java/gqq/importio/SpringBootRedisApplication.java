@@ -18,8 +18,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @author gqq
  *
  */
+//@EnableScheduling
 @SpringBootApplication
-@EnableScheduling
 public class SpringBootRedisApplication {
 
 	public static void main(String[] args) {
