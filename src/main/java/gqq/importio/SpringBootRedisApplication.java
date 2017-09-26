@@ -2,6 +2,7 @@ package gqq.importio;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * @SpringBootApplication is a convenience annotation that adds all of the following:
@@ -12,10 +13,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *                          classpath. This flags the application as a web application and activates key behaviors such as setting up a
  *                          DispatcherServlet.
  * @ComponentScan tells Spring to look for other components, configurations, and services in the hello package, allowing it to find the controllers.
+ * 
+ * @EnableScheduling ensures that a background task executor is created. Without it, nothing gets scheduled.
  * @author gqq
  *
  */
 @SpringBootApplication
+@EnableScheduling
 public class SpringBootRedisApplication {
 
 	public static void main(String[] args) {
